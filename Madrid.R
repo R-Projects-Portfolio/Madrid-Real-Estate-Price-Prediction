@@ -23,13 +23,13 @@ library(WVPlots)
 library(dplyr)
 library(tidyverse)
 
-#Now let's import our data into R
+#Now let's import our data into R.
 madrid <- read_excel("C:\\Users\\HP\\OneDrive\\Desktop\\madrid_real_estate.xlsx", 
                      sheet = "cleaned_dataset")
 glimpse(madrid)
 dim(madrid)
 
-#Let's see how many unique locations are there in the data-set
+#Let's see how many unique locations are there in the data-set.
 unique(madrid$area)
 
 #So there are 145 unique locations in the data-set.
@@ -331,5 +331,4 @@ g_curve <- GainCurvePlot(val_1, "P", "S6", "Property Price Model")
 #our model predicts well and thus is a good fit.
 
 final_model
-
 
