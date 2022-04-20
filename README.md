@@ -48,7 +48,7 @@ Now we filter our data into x -> which includes all independent variables & y ->
 
 We then plot a histogram and density function line for dependent variable (buy_price).
 
-![Screenshot (41)](https://user-images.githubusercontent.com/97380339/164286857-a64de26b-da7b-48b9-8afa-23cf80ec5ac8.png)
+![Screenshot (61)](https://user-images.githubusercontent.com/97380339/164293096-12477e52-962a-474e-a787-e8358eecd685.png)
 
 Now we divide our data into Test Set and Train Set. 
 Since this is a supervised machine learning model, 80% of our final data set is used as Training Data, which trains the model.
