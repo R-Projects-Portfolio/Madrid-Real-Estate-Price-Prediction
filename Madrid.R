@@ -23,13 +23,13 @@ library(WVPlots)
 library(dplyr)
 library(tidyverse)
 
-#Now let's import our data into R
+#Now let's import our data into R.
 madrid <- read_excel("C:\\Users\\HP\\OneDrive\\Desktop\\madrid_real_estate.xlsx", 
                      sheet = "cleaned_dataset")
 glimpse(madrid)
 dim(madrid)
 
-#Let's see how many unique locations are there in the data-set
+#Let's see how many unique locations are there in the data-set.
 unique(madrid$area)
 
 #So there are 145 unique locations in the data-set.
@@ -304,14 +304,16 @@ RMSE_train
 
 
 #Now let's use our test data to predict Test set results.
-P <- predict(final_model, newdata = test)
-P
+names(test)[names(test) == 'S6'] <- 'Buy Price'
+glimpse(test)
+Predicted_Price <- predict(final_model, newdata = test)
+glimpse(Predicted_Price)
 
-residual <- P - test[["S6"]]
+residual <- Predicted_Price - test[["Buy Price"]]
 residual
 
 #Calculate RMSE.
-MSE_test <- mean((P - test$S6)^2)
+MSE_test <- mean((Predicted_Price - test$`Buy Price`)^2)
 RMSE_test <- prettyNum(sqrt(MSE_test), 
                        digits=0, big.mark = ",")
 
@@ -320,16 +322,44 @@ RMSE_test
 
 
 #Validating Model.
-val <- cbind(P, residual)
+val <- cbind(Predicted_Price, residual)
 val_1 <- cbind(test, val)
 
 #Now let's make the Gain curve.
-g_curve <- GainCurvePlot(val_1, "P", "S6", "Property Price Model")
+gain_curve <- set.seed(34903490)
+              gainx = 0.25  # get the predicted top 25% most valuable points as sorted by the model
+              # make a function to calculate the label for the annotated point
+              labelfun = function(gx, gy) {
+               pctx = gx*100
+               pcty = gy*100
+  
+               paste("The predicted top ", pctx, "% most valuable points by the model\n",
+               "are ", pcty, "% of total actual value", sep='')
+               }
 
+
+               WVPlots::GainCurvePlotWithNotation(val_1, "Predicted_Price", "Buy Price",
+                                   title = "Property Price Model",
+                                   gainx = gainx, labelfun = labelfun)
+               
+               
+               # now get the top 25% actual most valuable points
+               
+               labelfun = function(gx, gy) {
+                 pctx = gx*100
+                 pcty = gy*100
+                 
+                 paste("The actual top ", pctx, "% most valuable points\n",
+                       "are ", pcty, "% of total actual value", sep='')
+               }
+               
+               WVPlots::GainCurvePlotWithNotation(val_1, "Predicted_Price", "Buy Price",
+                                                  title = "Property Price Model",
+                                                  gainx = gainx, labelfun = labelfun, sort_by_model = TRUE)
+               
 #A relative Gini score close to 1 means the model sorts responses well.
 #And since our relative Gini score is 0.98 we can say that 
 #our model predicts well and thus is a good fit.
 
 final_model
-
 
