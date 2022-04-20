@@ -324,3 +324,4 @@ GainCurvePlot(val_1, "P", "S6", "Property Price Model")
 #A relative Gini score close to 1 means the model sorts responses well.
 #And since our relative Gini score is 0.98 we can say that our model predicts well and thus is a good fit.
 final_model
+
