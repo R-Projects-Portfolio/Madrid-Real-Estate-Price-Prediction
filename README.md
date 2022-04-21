@@ -85,7 +85,7 @@ Then we validate our model and make a Gain Curve to check if the model predicts 
 
 Gain Curve.
 
-![Screenshot (31)](https://user-images.githubusercontent.com/97380339/164292111-ca731df3-bbc6-4bb9-94e9-339c52893bc6.png)
+![Screenshot (64)](https://user-images.githubusercontent.com/97380339/164391456-626c2728-4026-4479-b09a-04ca1a4488d6.png)
 
 As we can see that the Relative Gini Score of our model is 0.98 & we know that if Relative Gini Score is close to 1 then the model sorts and predicts well.
 So we can safely say that we have a model which can predict the buy_price of property in Madrid very well.
