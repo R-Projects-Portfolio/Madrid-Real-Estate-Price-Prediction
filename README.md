@@ -22,72 +22,47 @@ Now, since we're interested in the buy price, we plotted buy_price_per_sq_ft wit
 As we can see from the plot, our data is bi-modal, so we cannot perform Linear Regression on our data, because normality is a condition for Linear Regression.
 So, we will perform [Quantile Regression](https://en.wikipedia.org/wiki/Quantile_regression).
 
-Now the data is cleaned and some irrelevent coloumns are removed. The coloumns which had logical vectors were converted to numeric & since our regression model can't interpret text data, the text coloumns were converted to numeric data by using Dummy Variables.
+Then I cleaned the data some more and removed all the NA's, NAN's & INF's, converted text coloumns to factors and then all the columns to numerics.
 
-Now, there were 163 coloumns because all the UNIQUE areas & energy certificates were converted to a single numeric coloumn each.
+![Cleaned Dataset](https://user-images.githubusercontent.com/97380339/165928474-9065bd78-b7ab-498a-b5e0-9a940feef768.png)
 
-We also rename the coloumns as A1, B1, and so on till H7 because the area coloumn had some names in spanish letters which were interpreted as symbols by our model and thus will cause an error.
+Then I checked the correlation of independent variables and removed those which had a correlation-coefficient greater than 0.7.
 
-So this is how our data-set looks now.
+Then I plotted the buy price vs number of rooms to get a general view of my data and see if their were outliers.
 
-![Screenshot (38)](https://user-images.githubusercontent.com/97380339/164284985-fb875f51-b046-41cb-bddc-62623aa72563.png)
-![Screenshot (37)](https://user-images.githubusercontent.com/97380339/164284998-12a0a6d5-22eb-4662-a92d-bacc51d74804.png)
+![Price v Rooms](https://user-images.githubusercontent.com/97380339/165929168-67966d88-d5b9-4921-842d-cefcb37c342a.png)
 
-![Screenshot (40)](https://user-images.githubusercontent.com/97380339/164285289-8f569a05-af89-40eb-817f-31948857dadc.png)
+Plotted a histogram for the dependent variable.
 
-Now we convert the data into a data frame.
-We want to predict the buy_price, so that is our dependent variable & all others are our independent variables.
-So we run a correlation test on all our independent variables and remove those which have a correlation coefficent more than 0.7.
+![histogram of buy price](https://user-images.githubusercontent.com/97380339/165929406-1380122d-badc-411a-873d-5aa79a50d1d3.png)
 
-Now our final data frame (final_df) is ready. 
-It has 160 coloumns & 11549 rows.
+And a paired scatter plot of the independent variables to see correlation.
 
-![Screenshot (43)](https://user-images.githubusercontent.com/97380339/164286491-a3cf8a2e-bf7a-4b05-9182-701491b735fa.png)
+![indep_scatterplot](https://user-images.githubusercontent.com/97380339/165938568-fb1239a7-c70a-4e70-834c-d6ce82570bd2.png)
 
-Now we filter our data into x -> which includes all independent variables & y -> the dependent variable.
 
-We then plot a histogram and density function line for dependent variable (buy_price).
+Then we divide the data into Test and Train & use the Train data to train our model.
+When the quantile regression is done we do the AIC check to make sure our model is not over-fitted and then we get our final model.
 
-![Screenshot (61)](https://user-images.githubusercontent.com/97380339/164293096-12477e52-962a-474e-a787-e8358eecd685.png)
+![Final Modal](https://user-images.githubusercontent.com/97380339/165930353-82ad1ba3-3bcd-4054-9a0b-592ac90532b1.png)
 
-Now we divide our data into Test Set and Train Set. 
-Since this is a supervised machine learning model, 80% of our final data set is used as Training Data, which trains the model.
-And the rest 20% of the final data will be used as Testing Data which will help us to check the accuracy and fit of our model.
+Now we use our model to predict the Test set values and check the accuracy of it.
+We do so by plotting a gain curve.
 
-![Screenshot (46)](https://user-images.githubusercontent.com/97380339/164287849-2d151ca7-914f-4b79-8711-6c9e3687b46d.png)
 
-Now that we have our train data ready, we make our Quantile Regression Model.
+![Gain Curve](https://user-images.githubusercontent.com/97380339/165931190-b1bbec24-0a52-4841-8684-9f8bf4c8f10c.png)
 
-![Screenshot (49)](https://user-images.githubusercontent.com/97380339/164288287-64629735-ad3b-4016-a68c-9b7f3918b040.png)
 
-Now we check the summary of the model.
+A relative Gini score close to 1 means the model sorts responses well.
+And since our relative Gini score is 0.94 we can say that our model predicts well and thus is a good fit.
 
-![Screenshot (52)](https://user-images.githubusercontent.com/97380339/164288672-6ee7e78a-6216-4a92-8e41-7af7b89f44e3.png)
+Now we try to make a web page in R Shiny, which can be used to predict the price of the property in madrid (in Euro) through our model.
 
-Our model looks good as most of the p-values are less than the significance value (α = 0.05).
-But not all the variables have such small p-values. So to find the BEST combination of predictor variables, we will use Akaike Information Criterion (AIC). 
+This is how our webpage looks.
 
-After applying AIC prediction we find the best fit model which has only the necessary independent variables and so our final model is ready.
+![Web page](https://user-images.githubusercontent.com/97380339/165931780-53058f95-bd1a-4ac6-aaa9-1f3caf93be59.png)
 
-![Screenshot (53)](https://user-images.githubusercontent.com/97380339/164289679-c9299eb8-3587-4af2-8358-707e2f521e4a.png)
+You can also use the following link.
 
-So we see that our model indeed has the lowest AIC value & thus only the necessary variables. Also, all the p-values are less than significance value so our model is Statistically Significant.
-
-Now we use our model for prediction & calculate the MSE and RMSE.
-
-![Screenshot (55)](https://user-images.githubusercontent.com/97380339/164290589-21c5c64f-a6da-4d59-99fe-fefc9039024d.png)
-
-Then we use the Test Data-Set to predict Test Set results & calulate it's MSE & RMSE. We also calculate the residual or error that our model makes in predicting.
-
-![Screenshot (57)](https://user-images.githubusercontent.com/97380339/164291439-dbb818e0-9b2f-4757-ab5b-b87edbfd063d.png)
-
-Then we validate our model and make a Gain Curve to check if the model predicts well.
-
-Gain Curve.
-
-![Screenshot (64)](https://user-images.githubusercontent.com/97380339/164391456-626c2728-4026-4479-b09a-04ca1a4488d6.png)
-
-As we can see that the Relative Gini Score of our model is 0.98 & we know that if Relative Gini Score is close to 1 then the model sorts and predicts well.
-So we can safely say that we have a model which can predict the buy_price of property in Madrid very well.
-
+[Price Prediction of Madrid Real Esate](http://127.0.0.1:5779/)
 
