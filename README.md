@@ -44,13 +44,14 @@ And a paired scatter plot of the independent variables to see correlation.
 Then we divide the data into Test and Train & use the Train data to train our model.
 When the quantile regression is done we do the AIC check to make sure our model is not over-fitted and then we get our final model.
 
-![Final Modal](https://user-images.githubusercontent.com/97380339/165930353-82ad1ba3-3bcd-4054-9a0b-592ac90532b1.png)
+![Final Model](https://user-images.githubusercontent.com/97380339/165948702-d5a4dc95-6315-4947-ae53-19a918fb40a2.png)
+
 
 Now we use our model to predict the Test set values and check the accuracy of it.
 We do so by plotting a gain curve.
 
 
-![Gain Curve](https://user-images.githubusercontent.com/97380339/165931190-b1bbec24-0a52-4841-8684-9f8bf4c8f10c.png)
+![Gain Curve](https://user-images.githubusercontent.com/97380339/165949292-8ea0e93e-d4b7-48a5-8039-2de972a91f4c.png)
 
 
 A relative Gini score close to 1 means the model sorts responses well.
@@ -60,9 +61,10 @@ Now we try to make a web page in R Shiny, which can be used to predict the price
 
 This is how our webpage looks.
 
-![Web page](https://user-images.githubusercontent.com/97380339/165931780-53058f95-bd1a-4ac6-aaa9-1f3caf93be59.png)
+![Web Page](https://user-images.githubusercontent.com/97380339/165949920-4b7fce04-acec-4304-986a-0ccdad616c06.png)
+
 
 You can also use the following link.
 
-[Price Prediction of Madrid Real Esate](http://127.0.0.1:5779/)
+[Price Prediction of Madrid Real Esate](http://127.0.0.1:4164/)
 
