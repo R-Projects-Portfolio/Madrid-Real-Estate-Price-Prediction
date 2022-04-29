@@ -196,7 +196,7 @@ c <- findCorrelation(correlation_indep_var, cutoff = 0.7, verbose = FALSE, exact
 c
 
 #So we see that the correlation on n_bathrooms with n_rooms & sq_mt_built is very high, which means that we can remove it and the model will still behave the same.
-dataset_2 <- dataset[,-c(4)]
+dataset_2 <- dataset[,-c(4,5,6,10)]
 glimpse(dataset_2)
 
 #Plotting buy price by number of rooms
@@ -225,14 +225,14 @@ his
 prop.table(table(buy_price))
 
 #Now we plot the scatter plot to see the correlation:
-cor_plot <- pairs(dataset_3, col = "lightblue", main = "Scatterplots")
+cor_plot <- pairs(x, col = "lightblue", main = "Scatterplots")
 
 final_dataset <- as.data.frame(dataset_3)
-final_dataset
+glimpse(final_dataset)
 
 final_dataset <- data.frame(lapply(final_dataset,
                                    function(x) if(is.numeric(x)) round(x, 0) else x))
-final_dataset 
+glimpse(final_dataset)
 
 #Now we split our data-set into Test Data an Train Data for the ML-Model.
 
@@ -252,7 +252,7 @@ glimpse(train)
 dim(train)
 
 #And then we create our test data.
-test <- data[split1== 1, ]
+test <- data[split== 1, ]
 head(test)
 dim(test)
 
@@ -261,27 +261,15 @@ model_1 <- rq(buy_price~., tau = 0.8, train)
 summary_1 <- summary.rq(model_1, se = "iid", covariance = FALSE)
 summary_1
 
-#Now we can see that our model has a lot of p-values greater than 0.05.
-#So we run an AIC test to find the best fitting variables and thus the best model.
+
+#We run an AIC test to find the best fitting variables, (so as not to over-fit) and thus the best model.
 
 f_check <- stepAIC(model_1, direction = "both")
 summary.rq(f_check)
 
-#So our AIC check reveals that housetype column is basically over-fitting. So, we'll remove that from our model.
-
-final_model_1 <- rq(formula = buy_price ~ area_id + sq_mt_built + n_rooms + floor + 
-                      is_new_development + has_lift + has_parking + energy_cert, 
-                    tau = 0.8, data = train)
-summary <- summary.rq(final_model_1)
-
-
-f_check_1 <- stepAIC(final_model_1, direction = "both")
-
-summary.rq(f_check_1)
-
 
 #Now we use our model for prediction & calculate the MSE and RMSE.
-pred_train <- predict(final_model_1)
+pred_train <- predict(model_1)
 pred_train
 
 MSE_training <- sum((pred_train - train$buy_price)^2)/(nrow(train) - 2)
@@ -293,7 +281,7 @@ RMSE_training
 
 #Now let's use our test data to predict Test set results.
 glimpse(test)
-predicted_p <- predict(final_model_1, newdata = test)
+predicted_p <- predict(model_1, newdata = test)
 glimpse(predicted_p)
 
 residuals <- predicted_p - test[["buy_price"]]
@@ -346,24 +334,27 @@ WVPlots::GainCurvePlotWithNotation(validation, "predicted_p", "buy_price",
 #And since our relative Gini score is 0.98 we can say that 
 #our model predicts well and thus is a good fit.
 
-final_model
+model_1
 
 #Cleaning the data to be passed into shiny.
 glimpse(final_dataset)
 data <- as.data.frame(final_dataset)
 
-model_data <- data[, -c(5,6,9)]
+model_data <- final_dataset
 glimpse(model_data)
 
 is.factor(model_data$area_id)
+is.factor(model_data$is_new_development)
 is.factor(model_data$has_lift)
 is.factor(model_data$has_parking)
 
 model_data$area_id = as.factor(model_data$area_id)
+model_data$is_new_development = as.factor(model_data$is_new_development)
 model_data$has_lift = as.factor(model_data$has_lift)
 model_data$has_parking = as.factor(model_data$has_parking)
 
 is.factor(model_data$area_id)
+is.factor(model_data$is_new_development)
 is.factor(model_data$has_lift)
 is.factor(model_data$has_parking)
 
@@ -376,16 +367,21 @@ str(na_clean)
 is.numeric(na_clean$area_id)
 is.numeric(na_clean$sq_mt_built)
 is.numeric(na_clean$n_rooms)
-is.numeric(na_clean$floor)
+is.numeric(na_clean$is_new_development)
 is.numeric(na_clean$has_lift)
 is.numeric(na_clean$has_parking)
 
 area.id = sapply(na_clean$area_id, as.numeric)
+is.new.development = sapply(na_clean$is_new_development, as.numeric)
 has.lift = sapply(na_clean$has_lift, as.numeric)
 has.parking = sapply(na_clean$has_parking, as.numeric)
 
-use_data_1 = cbind(na_clean, area.id)
+use_data_0 = cbind(na_clean, area.id)
+use_data_0
+
+use_data_1 = cbind(use_data_0, is.new.development)
 use_data_1
+
 
 use_data_2 = cbind(use_data_1, has.lift)
 use_data_2
@@ -393,10 +389,14 @@ use_data_2
 use_data_3 = cbind(use_data_2, has.parking)
 use_data_3
 
-inputdata = use_data_3[, c("area.id", "sq_mt_built", "n_rooms", "floor", "has.lift", "has.parking", "buy_price")]
+glimpse(use_data_3)
 
+inputdata = use_data_3[, c("area.id", "sq_mt_built", "n_rooms", "is.new.development", "has.lift", "has.parking", "buy_price")]
+
+glimpse(inputdata)
 
 is.numeric(inputdata$area.id)
+is.numeric(inputdata$is.new.development)
 is.numeric(inputdata$has.lift)
 is.numeric(inputdata$has.parking)
 
@@ -415,7 +415,7 @@ ui <- fluidPage(
     textInput("area.id", "Enter the id of the area you want to buy the property in (1-144). ", "" ),
     textInput("sq_mt_built", "Enter the total area (sq-mt) you want. ", ""),
     textInput("n_rooms", "Enter the number of rooms you want. ", ""),
-    textInput("floor", "Enter the number of floors you want. ", ""),
+    textInput("is.new.development", "If you want newly developed property type 1, else type 0 ", ""),
     textInput("has.lift", "If you want lift on property type 1, else type 0 ", ""),
     textInput("has.parking", "If you want parking on property type 1, else type 0 ", ""),
     actionButton('go', "Predict")
@@ -423,8 +423,8 @@ ui <- fluidPage(
   
   
   mainPanel( 
-    width = 50,
-    headerPanel("The Price of the property in Madrid is "),
+    width = 50, headerPanel("The Price of the property in Madrid is € "),
+    
     textOutput("value")
   )
 )
@@ -442,21 +442,21 @@ server <- function(input, output) {
     is.numeric(inputdata$area.id)
     is.numeric(inputdata$sq_mt_built)
     is.numeric(inputdata$n_rooms)
-    is.numeric(inputdata$floor)
+    is.numeric(inputdata$is.new.development)
     is.numeric(inputdata$has.lift)
     is.numeric(inputdata$has.parking)
     
     data2$myarea.id = as.numeric(input$area.id)
     data2$mysq_mt_built = as.numeric(input$sq_mt_built)
     data2$myn_rooms = as.numeric(input$n_rooms)
-    data2$myfloor = as.numeric(input$floor)
+    data2$myis.new.development = as.numeric(input$is.new.development)
     data2$myhas.lift = as.numeric(input$has.lift)
     data2$myhas.parking = as.numeric(input$has.parking)
     
     
-    new.predict = data.frame(area.id = data2$myarea.id, sq_mt_built = data2$mysq_mt_built, n_rooms = data2$myn_rooms, floor = data2$myfloor, has.lift = data2$myhas.lift, has.parking = data2$myhas.parking)
+    new.predict = data.frame(area.id = data2$myarea.id, sq_mt_built = data2$mysq_mt_built, n_rooms = data2$myn_rooms, is.new.development = data2$myis.new.development, has.lift = data2$myhas.lift, has.parking = data2$myhas.parking)
     
-    model_Quant_Reg = rq(buy_price ~ area.id+sq_mt_built+n_rooms+floor+has.lift+has.parking, tau = 0.8, data = inputdata)
+    model_Quant_Reg = rq(buy_price ~ area.id+sq_mt_built+n_rooms+is.new.development+has.lift+has.parking, tau = 0.8, data = inputdata)
     
     data2$op = predict(model_Quant_Reg, new.predict)
   })
