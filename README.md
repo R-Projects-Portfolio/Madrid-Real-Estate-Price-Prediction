@@ -1,8 +1,7 @@
 # Madrid-Real-Estate-Price-Prediction
 This is a supervised learning model which predicts the price of Real Estate in Madrid, Spain.
 
-Data collected from Kaggle.
-[Kaggle](https://www.kaggle.com/datasets/mirbektoktogaraev/madrid-real-estate-market)
+Data collected from [Kaggle.](https://www.kaggle.com/datasets/mirbektoktogaraev/madrid-real-estate-market)
 
 The dataset consist listings from popular real estate portals of Madrid. I first cleaned the data in excel and then imported it to R.
 
