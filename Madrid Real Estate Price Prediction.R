@@ -29,7 +29,7 @@ library(tidyverse)
 library(RColorBrewer)
 
 #Now let's import our data into R.
-madrid <- read_excel("C:\\Users\\HP\\OneDrive\\Desktop\\madrid_real_estate.xlsx", 
+madrid <- read_excel("C:\\Users\\HP\\OneDrive\\Documents\\Projects\\Datasets for Projects\\R\\madrid_real_estate.xlsx", 
                      sheet = "cleaned_dataset")
 glimpse(madrid)
 dim(madrid)
